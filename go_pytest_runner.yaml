@@ -1,0 +1,99 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  creationTimestamp: null
+  name: pod-list
+rules:
+- apiGroups: [""]
+  resources:
+  - pods
+  - pods/log
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  creationTimestamp: null
+  name: go-pytest-runner-sa
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  creationTimestamp: null
+  name: go-pytest-runner_pod-list
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: pod-list
+subjects:
+- kind: ServiceAccount
+  name: go-pytest-runner-sa
+  namespace: default
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: go-pytest-runner
+  name: go-pytest-runner
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: go-pytest-runner
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: go-pytest-runner
+    spec:
+      serviceAccountName: go-pytest-runner-sa
+      containers:
+      - image: k3d-registry.localhost:5000/go_pytest_runner:0.5
+        name: go-pytest-runner
+        resources: {}
+        imagePullPolicy: Always
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: go-pytest-runner
+  name: go-pytest-runner-svc
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: go-pytest-runner
+status:
+  loadBalancer: {}
+---
+# This is to route requests from localhost into k3d cluster network
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nginx
+  annotations:
+    ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: go-pytest-runner-svc
+            port:
+              number: 80
