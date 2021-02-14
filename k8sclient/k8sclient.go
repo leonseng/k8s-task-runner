@@ -15,6 +15,7 @@ import (
 type CreateParameters struct {
 	Id        string   `json:"id"`
 	Image     string   `json:"image"`
+	Command   []string `json:"command"`
 	Arguments []string `json:"args"`
 	Timeout   int      `json:"timeout"`
 	OutputDir string   `json:"outputDir"`
@@ -44,12 +45,12 @@ func CreatePod(clientset *kubernetes.Clientset, namespace string, params CreateP
 					Name:            "pytest-pod",
 					Image:           params.Image,
 					ImagePullPolicy: core.PullAlways,
+					Command:         params.Command,
 					Args:            params.Arguments,
 				},
 			},
 			RestartPolicy: core.RestartPolicyNever,
 		},
-		// todo: mount outputdir to NFS {id}/
 	}
 
 	pod, err := clientset.CoreV1().Pods(namespace).Create(context.TODO(), pod, metav1.CreateOptions{})
