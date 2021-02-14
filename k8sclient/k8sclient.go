@@ -17,8 +17,6 @@ type CreateParameters struct {
 	Image     string   `json:"image"`
 	Command   []string `json:"command"`
 	Arguments []string `json:"args"`
-	Timeout   int      `json:"timeout"`
-	OutputDir string   `json:"outputDir"`
 }
 
 type GetStatusParameters struct {
@@ -35,8 +33,6 @@ func CreatePod(clientset *kubernetes.Clientset, namespace string, params CreateP
 			Namespace: namespace,
 			Labels: map[string]string{
 				"app":       podName,
-				"lifespan":  strconv.Itoa(params.Timeout), // to be used by a cleanup pod
-				"outputDir": params.OutputDir,
 			},
 		},
 		Spec: core.PodSpec{
