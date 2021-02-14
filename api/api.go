@@ -19,9 +19,20 @@ func HandleRequests(clientset *kubernetes.Clientset, namespace string, port int)
 
 	/*
 		POST /
-		Create a K8s test pod from the provided image
+		Create a single-run K8s pod (retartPolicy=Never) from the provided image
+
+		Request JSON parameters:
+			image: Docker image to run
+			command: Overrides command field in the container (equivalent to Docker ENTRYPOINT)
+			args: Overrides arguments defined in the container (equivalent to Docker CMD)
 
 		Return 201 if Job was created successfully, 400 otherwise
+
+		Response body:
+			id: Request id - used to query for status
+			image: Docker image to run
+			command: Overrides command field in the container (equivalent to Docker ENTRYPOINT)
+			args: Overrides arguments defined in the container (equivalent to Docker CMD)
 	*/
 	r.HandleFunc(
 		"/",
@@ -54,9 +65,17 @@ func HandleRequests(clientset *kubernetes.Clientset, namespace string, port int)
 
 	/*
 		GET /{id}
-		Gets status of test pod, and container logs if test run has been completed
+		Gets status of single-run pod, and container logs if test run has been completed
+
+		Path parameter:
+			id: Request id
 
 		Return 200 if no errors, 400 otherwise
+
+		Response body:
+			id: Request id
+			status: Phase of single-run pod
+			logs: Terminal output from kubectl logs <pod> command
 	*/
 	r.HandleFunc(
 		"/{id}",

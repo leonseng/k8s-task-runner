@@ -1,3 +1,6 @@
+# Kubernetes Task Runner
+
+
 
 ## Spin up local k8s cluster
 
@@ -22,13 +25,13 @@ docker push k3d-registry.localhost:5000/<image>
 
 Test
 ```
-curl -X POST -H "Content-Type: application/json" --data '{"image":"k3d-registry.localhost:5000/simple_pytest:0.1","command":["sh", "-c"],"args":["pytest ./tests/ --junitxml output.xml && cat output.xml"],"timeout":600}' localhost:8080/
+curl -X POST -H "Content-Type: application/json" --data '{"image":"k3d-registry.localhost:5000/simple_pytest:0.1","command":["sh", "-c"],"args":["pytest ./tests/ --junitxml output.xml && cat output.xml"]}' localhost:8080/
 
 # Successful test
-curl -X POST -H "Content-Type: application/json" --data '{"image":"k3d-registry.localhost:5000/simple_pytest:0.1","command":["sh", "-c"],"args":["pytest ./tests/ -k test_sample_1 --junitxml output.xml && cat output.xml"],"timeout":600}' localhost:8080/
+curl -X POST -H "Content-Type: application/json" --data '{"image":"k3d-registry.localhost:5000/simple_pytest:0.1","command":["sh", "-c"],"args":["pytest ./tests/ -k test_sample_1 --junitxml output.xml && cat output.xml"]}' localhost:8080/
 
 # Store Id to variable
-JOB_ID=$(curl -X POST -H "Content-Type: application/json" --data '{"image":"k3d-registry.localhost:5000/simple_pytest:0.1","command":["sh", "-c"],"args":["pytest ./tests/ -k test_sample_1 --junitxml output.xml && cat output.xml"],"timeout":600}' localhost:8080/ | jq -r .id)
+JOB_ID=$(curl -X POST -H "Content-Type: application/json" --data '{"image":"k3d-registry.localhost:5000/simple_pytest:0.1","command":["sh", "-c"],"args":["pytest ./tests/ -k test_sample_1 --junitxml output.xml && cat output.xml"]}' localhost:8080/ | jq -r .id)
 ```
 
 Get test results
