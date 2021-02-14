@@ -4,7 +4,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 
-	"github.com/leonseng/go_pytest_runner/api"
+	"github.com/leonseng/k8s_task_runner/api"
 
 	log "github.com/sirupsen/logrus"
 )

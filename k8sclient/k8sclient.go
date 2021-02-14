@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"io"
-	"strconv"
 
 	log "github.com/sirupsen/logrus"
 	core "k8s.io/api/core/v1"
@@ -32,7 +31,7 @@ func CreatePod(clientset *kubernetes.Clientset, namespace string, params CreateP
 			Name:      podName,
 			Namespace: namespace,
 			Labels: map[string]string{
-				"app":       podName,
+				"app": podName,
 			},
 		},
 		Spec: core.PodSpec{

@@ -9,7 +9,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
-	"github.com/leonseng/go_pytest_runner/k8sclient"
+	"github.com/leonseng/k8s_task_runner/k8sclient"
 
 	log "github.com/sirupsen/logrus"
 )

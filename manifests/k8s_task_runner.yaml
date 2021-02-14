@@ -19,20 +19,20 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   creationTimestamp: null
-  name: go-pytest-runner-sa
+  name: k8s-task-runner-sa
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   creationTimestamp: null
-  name: go-pytest-runner_pod-list
+  name: k8s-task-runner_pod-list
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
   name: pod-list
 subjects:
 - kind: ServiceAccount
-  name: go-pytest-runner-sa
+  name: k8s-task-runner-sa
   namespace: default
 ---
 apiVersion: apps/v1
@@ -40,24 +40,24 @@ kind: Deployment
 metadata:
   creationTimestamp: null
   labels:
-    app: go-pytest-runner
-  name: go-pytest-runner
+    app: k8s-task-runner
+  name: k8s-task-runner
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: go-pytest-runner
+      app: k8s-task-runner
   strategy: {}
   template:
     metadata:
       creationTimestamp: null
       labels:
-        app: go-pytest-runner
+        app: k8s-task-runner
     spec:
-      serviceAccountName: go-pytest-runner-sa
+      serviceAccountName: k8s-task-runner-sa
       containers:
-      - image: k3d-registry.localhost:5000/go_pytest_runner:0.5
-        name: go-pytest-runner
+      - image: k3d-registry.localhost:5000/k8s_task_runner:0.5
+        name: k8s-task-runner
         resources: {}
         imagePullPolicy: Always
 status: {}
@@ -67,15 +67,15 @@ kind: Service
 metadata:
   creationTimestamp: null
   labels:
-    app: go-pytest-runner
-  name: go-pytest-runner-svc
+    app: k8s-task-runner
+  name: k8s-task-runner-svc
 spec:
   ports:
   - port: 80
     protocol: TCP
     targetPort: 80
   selector:
-    app: go-pytest-runner
+    app: k8s-task-runner
 status:
   loadBalancer: {}
 ---
@@ -94,6 +94,6 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: go-pytest-runner-svc
+            name: k8s-task-runner-svc
             port:
               number: 80

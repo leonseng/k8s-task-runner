@@ -1,4 +1,4 @@
-module github.com/leonseng/go_pytest_runner
+module github.com/leonseng/k8s_task_runner
 
 go 1.15
 

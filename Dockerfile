@@ -13,6 +13,6 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build
 
 # final stage
 FROM scratch
-COPY --from=builder /app/go_pytest_runner /app/
+COPY --from=builder /app/k8s_task_runner /app/
 
-ENTRYPOINT ["/app/go_pytest_runner"]
+ENTRYPOINT ["/app/k8s_task_runner"]

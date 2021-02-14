@@ -1,6 +1,6 @@
 # Kubernetes Task Runner
 
-
+Exposes a REST API to create a single-run pod on a Kubernetes cluster, and another API to retrieve the task status and logs.
 
 ## Spin up local k8s cluster
 
