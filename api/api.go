@@ -39,8 +39,7 @@ func HandleRequests(clientset *kubernetes.Clientset, namespace string, port int)
 		func(w http.ResponseWriter, r *http.Request) {
 			var reqBody k8sclient.CreateParameters
 			err := json.NewDecoder(r.Body).Decode(&reqBody)
-			log.Debugf("POST /\n%+v\n-----")
-			log.Debugf("", reqBody)
+			log.Debugf("POST /\n%+v\n-----", reqBody)
 
 			if err != nil {
 				// unable to convert request body to JSON, return 400
