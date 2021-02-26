@@ -9,13 +9,19 @@ The following binaries are required to run the tests:
 - [k3d](https://k3d.io/#installation)
 - [golangci-lint](https://golangci-lint.run/usage/install/#local-installation)
 
-## Instructions
+## Testing
+
+> If you are behind a proxy, create a file called `.user-env` at the root directory of the project with following contents:
+> ```
+> HTTP_PROXY=<PROXY_URL>:<PROXY_PORT>  # e.g. HTTP_PROXY=http://10.0.2.15:3128
+> ```
 
 To setup for testing, run `make init`, which performs the following:
 - Spin up a test Kubernetes cluster using k3d (Or run `make k3d-setup`)
 - Build and push `k8s-task-runner` image into the k3d docker repository (Or run `make image-build`)
 
 To test, run `make test`.
+
 
 ## Todo
 
