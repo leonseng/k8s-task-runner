@@ -25,7 +25,7 @@ type GetStatusParameters struct {
 }
 
 func CreatePod(clientset *kubernetes.Clientset, namespace string, params CreateParameters) error {
-	podName := "pytest-pod-" + params.Id
+	podName := "task-pod-" + params.Id
 	pod := &core.Pod{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      podName,
@@ -37,7 +37,7 @@ func CreatePod(clientset *kubernetes.Clientset, namespace string, params CreateP
 		Spec: core.PodSpec{
 			Containers: []core.Container{
 				{
-					Name:            "pytest-pod",
+					Name:            "task-pod",
 					Image:           params.Image,
 					ImagePullPolicy: core.PullAlways,
 					Command:         params.Command,
@@ -58,12 +58,12 @@ func CreatePod(clientset *kubernetes.Clientset, namespace string, params CreateP
 }
 
 func GetPod(clientset *kubernetes.Clientset, namespace string, id string) (*core.Pod, error) {
-	podName := "pytest-pod-" + id
+	podName := "task-pod-" + id
 	return clientset.CoreV1().Pods(namespace).Get(context.TODO(), podName, metav1.GetOptions{})
 }
 
 func GetPodLogs(clientset *kubernetes.Clientset, namespace string, id string) (string, error) {
-	podName := "pytest-pod-" + id
+	podName := "task-pod-" + id
 	req := clientset.CoreV1().Pods(namespace).GetLogs(podName, &core.PodLogOptions{})
 	podLogs, err := req.Stream(context.TODO())
 	if err != nil {

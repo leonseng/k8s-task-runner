@@ -9,8 +9,8 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-var PytestRunnerNamespace = "default"
-var PytestRunnerPort = 80
+var taskRunnerNamespace = "default"
+var taskRunnerPort = 80
 
 func main() {
 	log.SetLevel(log.DebugLevel)
@@ -26,5 +26,5 @@ func main() {
 		panic(err.Error())
 	}
 
-	api.HandleRequests(clientset, PytestRunnerNamespace, PytestRunnerPort)
+	api.HandleRequests(clientset, taskRunnerNamespace, taskRunnerPort)
 }
