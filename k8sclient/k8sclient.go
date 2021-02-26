@@ -53,7 +53,7 @@ func CreatePod(clientset *kubernetes.Clientset, namespace string, params CreateP
 		return err
 	}
 
-	log.Infof("Test pod %s created successfully.", podName)
+	log.Infof("Test pod %s created successfully.", pod.Name)
 	return nil
 }
 

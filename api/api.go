@@ -58,7 +58,12 @@ func HandleRequests(clientset *kubernetes.Clientset, namespace string, port int)
 
 			w.WriteHeader(http.StatusCreated)
 			w.Header().Add("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(respBody)
+			err = json.NewEncoder(w).Encode(respBody)
+			if err != nil {
+				log.Error("Failed to decode POST response body to struct")
+				http.Error(w, "Internal error", http.StatusInternalServerError)
+				return
+			}
 		},
 	).Methods(http.MethodPost)
 
@@ -105,16 +110,14 @@ func HandleRequests(clientset *kubernetes.Clientset, namespace string, port int)
 
 			w.WriteHeader(http.StatusOK)
 			w.Header().Add("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(respBody)
+			err = json.NewEncoder(w).Encode(respBody)
+			if err != nil {
+				log.Error("Failed to decode GET response body to struct")
+				http.Error(w, "Internal error", http.StatusInternalServerError)
+				return
+			}
 		},
 	).Methods(http.MethodGet)
 
-	/*
-		GET /{id}/results
-		Zip results if not exists, serve zipped results
-		Return 200 if no errors
-			200 - pod completed
-	*/
-
-	http.ListenAndServe(":"+strconv.Itoa(port), r)
+	_ = http.ListenAndServe(":"+strconv.Itoa(port), r)
 }
