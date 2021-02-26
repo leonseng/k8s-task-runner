@@ -2,42 +2,16 @@
 
 Exposes a REST API to create a single-run pod on a Kubernetes cluster, and another API to retrieve the task status and logs.
 
-## Spin up local k8s cluster
+## Requirement
+- [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
+- [k3d](https://k3d.io/#installation)
+- [golangci-lint](https://golangci-lint.run/usage/install/#local-installation)
 
-```
-k3d registry create registry.localhost --port 5000
-k3d cluster create newcluster --registry-use k3d-registry.localhost:5000 -p "8080:80@loadbalancer" --agents 2
-```
+## Instructions
 
-Add entry to `/etc/hosts
-```
-localhost k3d-registry.localhost
-```
+To setup for testing, run `make init`, which performs the following:
+- Spin up a test Kubernetes cluster using k3d (Or run `make test-setup`)
+- Build and push `k8s-task-runner` image into the k3d docker repository (Or run `make image-build`)
 
-## Push image to k3d Docker registry
+To test, run `make test`.
 
-See https://k3d.io/usage/guides/registries/#using-a-local-registry
-
-```
-docker tag <image> k3d-registry.localhost:5000/<image>
-docker push k3d-registry.localhost:5000/<image>
-```
-
-Test
-```
-curl -X POST -H "Content-Type: application/json" --data '{"image":"k3d-registry.localhost:5000/simple_pytest:0.1","command":["sh", "-c"],"args":["pytest ./tests/ --junitxml output.xml && cat output.xml"]}' localhost:8080/
-
-# Successful test
-curl -X POST -H "Content-Type: application/json" --data '{"image":"k3d-registry.localhost:5000/simple_pytest:0.1","command":["sh", "-c"],"args":["pytest ./tests/ -k test_sample_1 --junitxml output.xml && cat output.xml"]}' localhost:8080/
-
-# Store Id to variable
-JOB_ID=$(curl -X POST -H "Content-Type: application/json" --data '{"image":"k3d-registry.localhost:5000/simple_pytest:0.1","command":["sh", "-c"],"args":["pytest ./tests/ -k test_sample_1 --junitxml output.xml && cat output.xml"]}' localhost:8080/ | jq -r .id)
-```
-
-Get test results
-```
-curl -s localhost:8080/$JOB_ID | jq .
-
-# Get test logs
-curl -s localhost:8080/$JOB_ID | jq -r .logs
-```

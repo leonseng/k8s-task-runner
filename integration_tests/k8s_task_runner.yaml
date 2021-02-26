@@ -56,7 +56,7 @@ spec:
     spec:
       serviceAccountName: k8s-task-runner-sa
       containers:
-      - image: k3d-registry.localhost:5000/k8s_task_runner:0.5
+      - image: k3d-k8s-task-runner.registry.localhost:5000/k8s_task_runner:0.5
         name: k8s-task-runner
         resources: {}
         imagePullPolicy: Always
