@@ -17,3 +17,9 @@ To setup for testing, run `make init`, which performs the following:
 
 To test, run `make test`.
 
+## Todo
+
+- [ ] Replace `k8s.io/api/core/v1.*` in [k8sclient](./k8sclient/k8sclient.go) with Kubernetes manifest YAML files
+- [ ] Image versioning needs work. It's currently statically defined under `IMAGE_VERSION` in the [Makefile](./Makefile)
+- [ ] Automatically pushing `k8s-task-runner` image to a remote Docker registry (Dockerhub?).
+- [ ] Create Helm chart
