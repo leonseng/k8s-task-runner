@@ -16,19 +16,14 @@ IMAGE_VERSION ?= 0.5
 IMAGE_TAG ?= $(IMAGE_REPO)/$(IMAGE_NAME):$(IMAGE_VERSION)
 
 .PHONY: init
-init: image-build test-setup
+init: k3d-setup image-build
 
 .PHONY: lint
 lint:
 	@ golangci-lint run
 
 .PHONY: clean
-clean: test-teardown
-	@ golangci-lint run
-
-.PHONY: test
-test:
-	@ go test ./integration_tests/
+clean: k3d-teardown
 
 ################
 # Manage image #
@@ -39,11 +34,24 @@ image-build:
 	docker build --tag $(IMAGE_TAG) ./
 	docker push $(IMAGE_TAG)
 
+#######################
+# Manage test objects #
+#######################
+.PHONY: test-setup
+test-setup:
+	@ kubectl apply -f integration_tests/k8s_task_runner.yaml
+	@ kubectl wait --for=condition=available --timeout=60s deployments/k8s-task-runner
+	@ sleep 5
+
+.PHONY: test
+test: test-setup
+	@ go test ./integration_tests/
+
 ###########################
 # Manage test environment #
 ###########################
-.PHONY: test-teardown
-test-teardown:
+.PHONY: k3d-teardown
+k3d-teardown:
 	@ if k3d cluster list $(TEST_CLUSTER); then \
 			k3d cluster delete $(TEST_CLUSTER); \
 		fi
@@ -51,8 +59,8 @@ test-teardown:
 			k3d registry delete k3d-$(TEST_REGISTRY); \
 		fi
 
-.PHONY: test-init
-test-setup:
+.PHONY: k3d-setup
+k3d-setup:
 	@ if ! k3d registry list k3d-$(TEST_REGISTRY); then \
 			k3d registry create $(TEST_REGISTRY) --port $(TEST_REGISTRY_PORT); \
 		fi
@@ -67,4 +75,3 @@ endif
 				; \
 		fi
 	@ kubectl config use-context k3d-$(TEST_CLUSTER)
-	@ kubectl apply -f manifests/k8s_task_runner.yaml

@@ -17,7 +17,10 @@ func TestK8sTestRunner(t *testing.T) {
 		Command: []string{"date"},
 	}
 	b := new(bytes.Buffer)
-	json.NewEncoder(b).Encode(reqBody)
+	err := json.NewEncoder(b).Encode(reqBody)
+	if err != nil {
+		t.Errorf("Failed to encode POST request body to JSON")
+	}
 
 	createResp, err := http.Post("http://localhost:8080", "application/json", b)
 	if err != nil {
@@ -28,7 +31,10 @@ func TestK8sTestRunner(t *testing.T) {
 
 	defer createResp.Body.Close()
 	createRespBody := new(k8sclient.CreateParameters)
-	json.NewDecoder(createResp.Body).Decode(createRespBody)
+	err = json.NewDecoder(createResp.Body).Decode(createRespBody)
+	if err != nil {
+		t.Errorf("Failed to decode POST response body to struct")
+	}
 
 	// wait for pod to run to completion
 	getRespBody := new(k8sclient.GetStatusParameters)
@@ -40,12 +46,14 @@ func TestK8sTestRunner(t *testing.T) {
 		}
 
 		defer getResp.Body.Close()
-		json.NewDecoder(getResp.Body).Decode(getRespBody)
-		if getRespBody.Status == "Succeeded" {
+		err = json.NewDecoder(getResp.Body).Decode(getRespBody)
+		if err != nil {
+			t.Errorf("Failed to decode GET response body to struct")
+		} else if getRespBody.Status == "Succeeded" {
 			break
 		}
 
-		time.Sleep(1)
+		time.Sleep(time.Second)
 	}
 
 	if getRespBody.Status != "Succeeded" {
