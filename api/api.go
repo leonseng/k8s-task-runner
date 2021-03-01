@@ -51,10 +51,10 @@ func HandleRequests(clientset *kubernetes.Clientset, namespace string, port int)
 			err = k8sclient.CreatePodFromManifest(
 				clientset,
 				k8sclient.CreateParameters{
-					ID: id,
+					ID:        id,
 					Namespace: namespace,
-					Image: reqBody.Image,
-					Command: reqBody.Command,
+					Image:     reqBody.Image,
+					Command:   reqBody.Command,
 					Arguments: reqBody.Arguments,
 				},
 			)
@@ -68,7 +68,7 @@ func HandleRequests(clientset *kubernetes.Clientset, namespace string, port int)
 			w.Header().Add("Content-Type", "application/json")
 			err = json.NewEncoder(w).Encode(
 				CreateResponse{
-					ID: id,
+					ID:      id,
 					Request: reqBody,
 				},
 			)
@@ -132,5 +132,8 @@ func HandleRequests(clientset *kubernetes.Clientset, namespace string, port int)
 		},
 	).Methods(http.MethodGet)
 
-	_ = http.ListenAndServe(":"+strconv.Itoa(port), r)
+	err := http.ListenAndServe(":"+strconv.Itoa(port), r)
+	if err != nil {
+		panic(err.Error())
+	}
 }
