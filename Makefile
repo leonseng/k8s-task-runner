@@ -15,9 +15,6 @@ IMAGE_NAME ?= k8s_task_runner
 IMAGE_VERSION ?= 0.5
 IMAGE_TAG ?= $(IMAGE_REPO)/$(IMAGE_NAME):$(IMAGE_VERSION)
 
-.PHONY: init
-init: k3d-setup image-build
-
 .PHONY: lint
 lint:
 	@ golangci-lint run
@@ -37,14 +34,22 @@ image-build:
 #######################
 # Manage test objects #
 #######################
-.PHONY: test-setup
-test-setup:
+.PHONY: test-out-of-cluster-setup
+test-out-of-cluster-setup:
+	@ go run main.go --external --port 8081
+
+.PHONY: test-in-cluster-setup
+test-in-cluster-setup: test-in-cluster-clean
 	@ kubectl apply -f integration_tests/k8s_task_runner.yaml
 	@ kubectl wait --for=condition=available --timeout=60s deployments/k8s-task-runner
 	@ sleep 5
 
+.PHONY: test-in-cluster-clean
+test-in-cluster-clean:
+	@ kubectl delete -f integration_tests/k8s_task_runner.yaml || true
+
 .PHONY: test
-test: test-setup
+test:
 	@ go test ./integration_tests/
 
 ###########################

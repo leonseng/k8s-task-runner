@@ -24,4 +24,8 @@ jobs:
           # install k3d
           curl -s https://raw.githubusercontent.com/rancher/k3d/main/install.sh | bash
       - name: Run local integration test
-        run: make init test
+        run: |
+          make k3d-setup
+          make image-build
+          make test-in-cluster-setup
+          go test -run TestInCluster ./integration_tests/
