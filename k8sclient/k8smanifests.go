@@ -1,13 +1,5 @@
 package k8sclient
 
-type podManifestData struct {
-	namespace string
-	podName   string
-	image     string
-	command   []string
-	arguments []string
-}
-
 var testPodManifestTemplate = `
 apiVersion: v1
 kind: Pod

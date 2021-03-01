@@ -5,14 +5,11 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"text/template"
 
 	log "github.com/sirupsen/logrus"
 	core "k8s.io/api/core/v1"
-	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/kubernetes/scheme"
 )
 
 type CreateParameters struct {
@@ -23,43 +20,18 @@ type CreateParameters struct {
 	Arguments []string
 }
 
-var podTemplate *template.Template
-
-func init() {
-	// define templates
-	var err error
-	podTemplate, err = template.New("podTemplate").Parse(testPodManifestTemplate)
-	if err != nil {
-		panic(err)
-	}
-	// do a test render here, check that it can be turned into a pod object
-}
-
 func CreatePodFromManifest(clientset *kubernetes.Clientset, params CreateParameters) error {
 	// render go templates and store output into a variable - https://coderwall.com/p/ns60fq/simply-output-go-html-template-execution-to-strings
 	userError := func() error {
 		return fmt.Errorf("failed to create task pod. See error logs")
 	}
 
-	var podManifest bytes.Buffer
-	err := podTemplate.Execute(&podManifest, params)
+	pod, err := manifestToPodObject(params)
 	if err != nil {
-		log.Errorf("Failed to render Pod manifest:\n%v\n", err)
+		log.Errorf(err.Error())
 		return userError()
 	}
 
-	// create k8s objects from YAML - https://github.com/kubernetes/client-go/issues/193
-	obj, groupVersionKind, err := scheme.Codecs.UniversalDeserializer().Decode([]byte(podManifest.String()), nil, nil)
-	if err != nil {
-		log.Errorf("Failed to decode Pod manifest into K8s Pod object:\n%v\n", err)
-		return userError()
-	}
-
-	log.Debugf("%+v", obj.GetObjectKind())
-	log.Debugf("%+v", groupVersionKind)
-	log.Debugf("%+v", obj)
-
-	pod := obj.(*v1.Pod)
 	pod, err = clientset.CoreV1().Pods(params.Namespace).Create(context.TODO(), pod, metav1.CreateOptions{})
 	if err != nil {
 		log.Errorf("Failed to create pod:\n%v\n", err)
