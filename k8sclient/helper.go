@@ -43,7 +43,7 @@ func manifestToPodObject(params CreateParameters) (*v1.Pod, error) {
 	}
 
 	// create k8s objects from YAML - https://github.com/kubernetes/client-go/issues/193
-	obj, groupVersionKind, err := scheme.Codecs.UniversalDeserializer().Decode([]byte(podManifest.String()), nil, nil)
+	obj, groupVersionKind, err := scheme.Codecs.UniversalDeserializer().Decode(podManifest.Bytes(), nil, nil)
 	if err != nil {
 		log.Errorf("Failed to decode Pod manifest into K8s Pod object\n")
 		return nil, err
