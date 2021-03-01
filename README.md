@@ -16,12 +16,17 @@ The following binaries are required to run the tests:
 > HTTP_PROXY=<PROXY_URL>:<PROXY_PORT>  # e.g. HTTP_PROXY=http://10.0.2.15:3128
 > ```
 
-To setup for testing, run `make init`, which performs the following:
-- Spin up a test Kubernetes cluster using k3d (Or run `make k3d-setup`)
-- Build and push `k8s-task-runner` image into the k3d docker repository (Or run `make image-build`)
+`k8s-task-runner` requires a Kubernetes cluster to interact with. You can spin up one by running `make k3d-setup`. Once the test cluster has been set up, pick one of the following test scenarios:
 
-To test, run `make test`.
-
+- Out of cluster
+  To run `k8s-task-runner` as a `go` binary external to the Kubernetes cluster, run
+  1. `make test-out-of-cluster-setup` to start the program, which should be listening on `localhost:8081`.
+  1. `go test -run TestOutOfCluster ./integration_tests/` to test `k8s-task-runner` on `localhost:8081`
+- In cluster
+  To run `k8s-task-runner` as a Pod within the Kubernetes cluster, run the following in sequence:
+  1. `make image-build` to build a new `k8s-task-runner` image and push it into the test Docker registry
+  1. `make test-in-cluster-setup` to deploy the necessary Kubernetes objects to start serving `k8s-task-runner` on `localhost:8080`
+  1. `go test -run TestInCluster ./integration_tests/` to test `k8s-task-runner` on `localhost:8080`
 
 ## Todo
 
