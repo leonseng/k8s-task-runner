@@ -37,7 +37,7 @@ func HandleRequests(clientset *kubernetes.Clientset, namespace string, port int)
 	r.HandleFunc(
 		"/",
 		func(w http.ResponseWriter, r *http.Request) {
-			var reqBody k8sclient.CreateParameters
+			var reqBody CreateRequest
 			err := json.NewDecoder(r.Body).Decode(&reqBody)
 			log.Debugf("POST /\n%+v\n-----", reqBody)
 
@@ -47,10 +47,18 @@ func HandleRequests(clientset *kubernetes.Clientset, namespace string, port int)
 				return
 			}
 
-			respBody := reqBody
-			respBody.Id = uuid.NewString()
+			id := uuid.NewString()
+			err = k8sclient.CreatePodFromManifest(
+				clientset,
+				k8sclient.CreateParameters{
+					ID: id,
+					Namespace: namespace,
+					Image: reqBody.Image,
+					Command: reqBody.Command,
+					Arguments: reqBody.Arguments,
+				},
+			)
 
-			err = k8sclient.CreatePod(clientset, namespace, respBody)
 			if err != nil {
 				http.Error(w, "Pod creation has failed:\n"+err.Error(), http.StatusBadRequest)
 				return
@@ -58,7 +66,12 @@ func HandleRequests(clientset *kubernetes.Clientset, namespace string, port int)
 
 			w.WriteHeader(http.StatusCreated)
 			w.Header().Add("Content-Type", "application/json")
-			err = json.NewEncoder(w).Encode(respBody)
+			err = json.NewEncoder(w).Encode(
+				CreateResponse{
+					ID: id,
+					Request: reqBody,
+				},
+			)
 			if err != nil {
 				log.Error("Failed to decode POST response body to struct")
 				http.Error(w, "Internal error", http.StatusInternalServerError)
@@ -93,8 +106,8 @@ func HandleRequests(clientset *kubernetes.Clientset, namespace string, port int)
 				return
 			}
 
-			respBody := k8sclient.GetStatusParameters{
-				Id:     id,
+			respBody := GetResponse{
+				ID:     id,
 				Status: string(pod.Status.Phase),
 			}
 
