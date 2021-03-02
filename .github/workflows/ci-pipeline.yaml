@@ -1,4 +1,4 @@
-name: Test
+name: ci-pipeline
 on: [push]
 jobs:
   linting:
@@ -23,9 +23,15 @@ jobs:
 
           # install k3d
           curl -s https://raw.githubusercontent.com/rancher/k3d/main/install.sh | bash
-      - name: Run local integration test
+      - name: Setup K8s cluster
         run: |
           make k3d-setup
-          make image-build
-          make test-in-cluster-setup
-          go test -run TestInCluster ./integration_tests/
+      - name: Run out of cluster integration test
+        run: |
+          make test-out-of-cluster-setup \
+            test-out-of-cluster
+      - name: Run in cluster integration test
+        run: |
+          make image-build \
+            test-in-cluster-setup \
+            test-in-cluster

@@ -3,6 +3,7 @@ package k8sclient
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
 	"fmt"
 	"io"
 
@@ -12,15 +13,55 @@ import (
 	"k8s.io/client-go/kubernetes"
 )
 
-type CreateParameters struct {
+type SecretParameters struct {
 	ID        string
 	Namespace string
+	Server    string
+	Username  string
+	Email     string
+	Password  string
+}
+
+func CreateDockerRegistrySecret(clientset *kubernetes.Clientset, params SecretParameters) (string, error) {
+	secretName := "task-secret-" + params.ID
+	b64Auth := base64.StdEncoding.EncodeToString([]byte(params.Username + ":" + params.Password))
+
+	secret := &core.Secret{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      secretName,
+			Namespace: params.Namespace,
+			Labels: map[string]string{
+				"id": params.ID,
+			},
+		},
+		StringData: map[string]string{
+			".dockerconfigjson": fmt.Sprintf(
+				`{"auths":{"%s":{"username":"%s","password":"%s","email":"%s","auth":"%s"}}}`,
+				params.Server, params.Username, params.Password, params.Email, b64Auth,
+			),
+		},
+	}
+
+	_, err := clientset.CoreV1().Secrets(params.Namespace).Create(context.TODO(), secret, metav1.CreateOptions{})
+	if err != nil {
+		log.Errorf("Failed to create Secret %s:\n%s\n", secretName, err.Error())
+		return "", err
+	}
+
+	log.Infof("Secret %s created successfully.", secretName)
+	return secretName, nil
+}
+
+type PodParameters struct {
+	ID        string
+	Namespace string
+	Secret    string
 	Image     string
 	Command   []string
 	Arguments []string
 }
 
-func CreatePodFromManifest(clientset *kubernetes.Clientset, params CreateParameters) error {
+func CreatePodFromManifest(clientset *kubernetes.Clientset, params PodParameters) error {
 	// render go templates and store output into a variable - https://coderwall.com/p/ns60fq/simply-output-go-html-template-execution-to-strings
 	userError := func() error {
 		return fmt.Errorf("failed to create task pod. See error logs")
@@ -36,39 +77,6 @@ func CreatePodFromManifest(clientset *kubernetes.Clientset, params CreateParamet
 	if err != nil {
 		log.Errorf("Failed to create pod:\n%v\n", err)
 		return userError()
-	}
-
-	log.Infof("Test pod %s created successfully.", pod.Name)
-	return nil
-}
-
-func CreatePod(clientset *kubernetes.Clientset, params CreateParameters) error {
-	podName := "task-pod-" + params.ID
-	pod := &core.Pod{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      podName,
-			Namespace: params.Namespace,
-			Labels: map[string]string{
-				"app": podName,
-			},
-		},
-		Spec: core.PodSpec{
-			Containers: []core.Container{
-				{
-					Name:            "task-pod",
-					Image:           params.Image,
-					ImagePullPolicy: core.PullAlways,
-					Command:         params.Command,
-					Args:            params.Arguments,
-				},
-			},
-			RestartPolicy: core.RestartPolicyNever,
-		},
-	}
-
-	pod, err := clientset.CoreV1().Pods(params.Namespace).Create(context.TODO(), pod, metav1.CreateOptions{})
-	if err != nil {
-		return err
 	}
 
 	log.Infof("Test pod %s created successfully.", pod.Name)

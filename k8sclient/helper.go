@@ -21,7 +21,7 @@ func init() {
 	}
 	// do a test render here, check that it can be turned into a pod object
 	_, err = manifestToPodObject(
-		CreateParameters{
+		PodParameters{
 			ID:        "123",
 			Namespace: "default",
 			Image:     "busybox:1.28",
@@ -34,7 +34,7 @@ func init() {
 	}
 }
 
-func manifestToPodObject(params CreateParameters) (*v1.Pod, error) {
+func manifestToPodObject(params PodParameters) (*v1.Pod, error) {
 	var podManifest bytes.Buffer
 	err := podTemplate.Execute(&podManifest, params)
 	if err != nil {

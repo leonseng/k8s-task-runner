@@ -35,8 +35,16 @@ image-build:
 # Manage test objects #
 #######################
 .PHONY: test-out-of-cluster-setup
-test-out-of-cluster-setup:
-	@ go run main.go --external --port 8081
+test-out-of-cluster-setup: test-out-of-cluster-clean
+	@ go run main.go --external --port 8081 &
+
+.PHONY: test-out-of-cluster-clean
+test-out-of-cluster-clean:
+	@ kill $$(ps -ef | grep "[ ]--external --port 8081" | awk '{print $$2}') 2> /dev/null || true
+
+.PHONY: test-out-of-cluster
+test-out-of-cluster:
+	@ go test -run TestOutOfCluster ./integration_tests/
 
 .PHONY: test-in-cluster-setup
 test-in-cluster-setup: test-in-cluster-clean
@@ -48,9 +56,9 @@ test-in-cluster-setup: test-in-cluster-clean
 test-in-cluster-clean:
 	@ kubectl delete -f integration_tests/k8s_task_runner.yaml || true
 
-.PHONY: test
-test:
-	@ go test ./integration_tests/
+.PHONY: test-in-cluster
+test-in-cluster:
+	@ go test -run TestInCluster ./integration_tests/
 
 ###########################
 # Manage test environment #

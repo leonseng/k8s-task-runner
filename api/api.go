@@ -25,14 +25,17 @@ func HandleRequests(clientset *kubernetes.Clientset, namespace string, port int)
 			image: Docker image to run
 			command: Overrides command field in the container (equivalent to Docker ENTRYPOINT)
 			args: Overrides arguments defined in the container (equivalent to Docker CMD)
+			dockerRegistry:
+				server: Private Docker Registry FQDN. Use https://index.docker.io/v2/ for DockerHub.
+				username: Docker username
+				password: Docker password
+				email: Docker email
 
 		Return 201 if Job was created successfully, 400 otherwise
 
 		Response body:
 			id: Request id - used to query for status
-			image: Docker image to run
-			command: Overrides command field in the container (equivalent to Docker ENTRYPOINT)
-			args: Overrides arguments defined in the container (equivalent to Docker CMD)
+			request: Request JSON body as parsed by k8s-task-runner
 	*/
 	r.HandleFunc(
 		"/",
@@ -48,11 +51,33 @@ func HandleRequests(clientset *kubernetes.Clientset, namespace string, port int)
 			}
 
 			id := uuid.NewString()
+
+			// create secret if provided
+			var secretName string
+			if reqBody.DockerRegistry != nil {
+				secretName, err = k8sclient.CreateDockerRegistrySecret(
+					clientset,
+					k8sclient.SecretParameters{
+						ID:        id,
+						Namespace: namespace,
+						Server:    reqBody.DockerRegistry.Server,
+						Username:  reqBody.DockerRegistry.Username,
+						Email:     reqBody.DockerRegistry.Email,
+						Password:  reqBody.DockerRegistry.Password,
+					},
+				)
+				if err != nil {
+					http.Error(w, "Docker registry secret creation has failed:\n"+err.Error(), http.StatusBadRequest)
+					return
+				}
+			}
+
 			err = k8sclient.CreatePodFromManifest(
 				clientset,
-				k8sclient.CreateParameters{
+				k8sclient.PodParameters{
 					ID:        id,
 					Namespace: namespace,
+					Secret:    secretName,
 					Image:     reqBody.Image,
 					Command:   reqBody.Command,
 					Arguments: reqBody.Arguments,

@@ -24,6 +24,12 @@ func runIntegrationTest(t *testing.T, apiEndpoint string) {
 	reqBody := api.CreateRequest{
 		Image:   "busybox:1.28",
 		Command: []string{"date"},
+		DockerRegistry: &api.DockerRegistry{
+			Server:   "test.com",
+			Username: "test-user",
+			Password: "secure",
+			Email:    "test-user@test.com",
+		},
 	}
 	b := new(bytes.Buffer)
 	err := json.NewEncoder(b).Encode(reqBody)
