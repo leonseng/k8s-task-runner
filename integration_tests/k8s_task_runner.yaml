@@ -3,12 +3,13 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   creationTimestamp: null
-  name: pod-list
+  name: k8s-task-runner-role
 rules:
 - apiGroups: [""]
   resources:
   - pods
   - pods/log
+  - secrets
   verbs:
   - get
   - list
@@ -29,7 +30,7 @@ metadata:
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: pod-list
+  name: k8s-task-runner-role
 subjects:
 - kind: ServiceAccount
   name: k8s-task-runner-sa
