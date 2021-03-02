@@ -28,11 +28,10 @@ jobs:
           make k3d-setup
       - name: Run out of cluster integration test
         run: |
-          make test-out-of-cluster-setup
-          sleep 5
-          go test -run TestOutOfCluster ./integration_tests/
+          make test-out-of-cluster-setup \
+            test-out-of-cluster
       - name: Run in cluster integration test
         run: |
-          make image-build
-          make test-in-cluster-setup
-          go test -run TestInCluster ./integration_tests/
+          make image-build \
+            test-in-cluster-setup \
+            test-in-cluster

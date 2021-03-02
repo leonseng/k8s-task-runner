@@ -22,13 +22,13 @@ The following binaries are required to run the tests:
 
   To run `k8s-task-runner` as a `go` binary external to the Kubernetes cluster, run
   1. `make test-out-of-cluster-setup` to start the program, which should be listening on `localhost:8081`.
-  1. `go test -run TestOutOfCluster ./integration_tests/` to test `k8s-task-runner` on `localhost:8081`
+  1. `make test-out-of-cluster` to test `k8s-task-runner` on `localhost:8081`
 - In cluster
 
   To run `k8s-task-runner` as a Pod within the Kubernetes cluster, run the following in sequence:
   1. `make image-build` to build a new `k8s-task-runner` image and push it into the test Docker registry
   1. `make test-in-cluster-setup` to deploy the necessary Kubernetes objects to start serving `k8s-task-runner` on `localhost:8080`
-  1. `go test -run TestInCluster ./integration_tests/` to test `k8s-task-runner` on `localhost:8080`
+  1. `make test-in-cluster` to test `k8s-task-runner` on `localhost:8080`
 
 ## Todo
 
