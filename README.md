@@ -33,7 +33,9 @@ The following binaries are required to run the tests:
 ## Todo
 
 - [x] Replace `k8s.io/api/core/v1.*` in [k8sclient](./k8sclient/k8sclient.go) with Kubernetes manifest YAML files
-- [ ] Add ability for users to pass in Docker credentials to pull images from private repos
+- [x] Add ability for users to pass in Docker credentials to pull images from private repos
+- [ ] Some mechanism to clean up old task pods and secrets
+- [ ] Improve API documentation. OpenAPI?
 - [ ] Image versioning needs work. It's currently statically defined under `IMAGE_VERSION` in the [Makefile](./Makefile)
 - [ ] Automatically pushing `k8s-task-runner` image to a remote Docker registry (Dockerhub?).
 - [ ] Create Helm chart
