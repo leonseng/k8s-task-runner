@@ -21,6 +21,24 @@ func TestOutOfCluster(t *testing.T) {
 }
 
 func runIntegrationTest(t *testing.T, apiEndpoint string) {
+	getStatus(t, apiEndpoint)
+	createAndGetTask(t, apiEndpoint)
+}
+
+func getStatus(t *testing.T, apiEndpoint string) {
+	resp, err := http.Get(apiEndpoint + "/status")
+	if err != nil {
+		t.Errorf("Failed to get app status: %v\n", err)
+	}
+
+	defer resp.Body.Close()
+	respBody := new(api.GetStatusResponse)
+	fmt.Printf("%+v\n", resp.Body)
+	err = json.NewDecoder(resp.Body).Decode(respBody)
+	assert.Equal(t, respBody.Status, "healthy")
+}
+
+func createAndGetTask(t *testing.T, apiEndpoint string) {
 	reqBody := api.CreateRequest{
 		Image:   "busybox:1.28",
 		Command: []string{"date"},

@@ -36,7 +36,7 @@ image-build:
 #######################
 .PHONY: test-out-of-cluster-setup
 test-out-of-cluster-setup: test-out-of-cluster-clean
-	@ go run main.go --external --port 8081 &
+	@ go run main.go --external --port 8081 > .log 2>&1 &
 
 .PHONY: test-out-of-cluster-clean
 test-out-of-cluster-clean:
