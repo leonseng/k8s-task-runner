@@ -61,6 +61,18 @@ spec:
         name: k8s-task-runner
         resources: {}
         imagePullPolicy: Always
+        livenessProbe:
+          httpGet:
+            path: /status
+            port: 80
+          failureThreshold: 6
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /status
+            port: 80
+          failureThreshold: 3
+          periodSeconds: 3
 status: {}
 ---
 apiVersion: v1
@@ -79,22 +91,3 @@ spec:
     app: k8s-task-runner
 status:
   loadBalancer: {}
----
-# This is to route requests from localhost into k3d cluster network
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: nginx
-  annotations:
-    ingress.kubernetes.io/ssl-redirect: "false"
-spec:
-  rules:
-  - http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: k8s-task-runner-svc
-            port:
-              number: 80

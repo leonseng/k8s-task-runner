@@ -32,7 +32,13 @@ func main() {
 		panic(err.Error())
 	}
 
-	api.HandleRequests(clientSet, inputs.namespace, inputs.port)
+	api.HandleRequests(
+		api.ApplicationConfiguration{
+			Port:          inputs.port,
+			K8sClientSet:  clientSet,
+			TaskNamespace: inputs.namespace,
+		},
+	)
 }
 
 func parseUserInputs() userInputs {

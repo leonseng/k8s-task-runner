@@ -10,7 +10,20 @@ jobs:
         with:
           # Required: the version of golangci-lint is required and must be specified without patch version: we always use the latest patch version.
           version: v1.30
-  test:
+  test-out-of-cluster:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup K8s cluster
+        run: |
+          # install k3d
+          curl -s https://raw.githubusercontent.com/rancher/k3d/main/install.sh | bash
+          make k3d-setup
+      - name: Run out of cluster integration test
+        run: |
+          make test-out-of-cluster-setup \
+            test-out-of-cluster
+  test-in-cluster:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -20,16 +33,11 @@ jobs:
           curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
           sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
           kubectl version --client
-
-          # install k3d
-          curl -s https://raw.githubusercontent.com/rancher/k3d/main/install.sh | bash
       - name: Setup K8s cluster
         run: |
+          # install k3d
+          curl -s https://raw.githubusercontent.com/rancher/k3d/main/install.sh | bash
           make k3d-setup
-      - name: Run out of cluster integration test
-        run: |
-          make test-out-of-cluster-setup \
-            test-out-of-cluster
       - name: Run in cluster integration test
         run: |
           make image-build \

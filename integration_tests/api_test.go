@@ -21,6 +21,28 @@ func TestOutOfCluster(t *testing.T) {
 }
 
 func runIntegrationTest(t *testing.T, apiEndpoint string) {
+	getStatus(t, apiEndpoint)
+	createAndGetTask(t, apiEndpoint)
+}
+
+func getStatus(t *testing.T, apiEndpoint string) {
+	resp, err := http.Get(apiEndpoint + "/status")
+	if err != nil {
+		t.Errorf("Failed to get app status: %v\n", err)
+	}
+
+	defer resp.Body.Close()
+	respBody := new(api.GetStatusResponse)
+	fmt.Printf("%+v\n", resp.Body)
+	err = json.NewDecoder(resp.Body).Decode(respBody)
+	if err != nil {
+		t.Errorf("Failed to decode GET response body to JSON")
+	}
+
+	assert.Equal(t, respBody.Status, "healthy")
+}
+
+func createAndGetTask(t *testing.T, apiEndpoint string) {
 	reqBody := api.CreateRequest{
 		Image:   "busybox:1.28",
 		Command: []string{"date"},
@@ -54,7 +76,7 @@ func runIntegrationTest(t *testing.T, apiEndpoint string) {
 	}
 
 	// wait for pod to run to completion
-	getRespBody := new(api.GetResponse)
+	getRespBody := new(api.GetTaskResponse)
 	var getResp *http.Response
 	for i := 0; i < 30; i++ {
 		getResp, err = http.Get(apiEndpoint + createRespBody.ID)
