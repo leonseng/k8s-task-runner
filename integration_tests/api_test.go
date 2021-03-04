@@ -35,6 +35,10 @@ func getStatus(t *testing.T, apiEndpoint string) {
 	respBody := new(api.GetStatusResponse)
 	fmt.Printf("%+v\n", resp.Body)
 	err = json.NewDecoder(resp.Body).Decode(respBody)
+	if err != nil {
+		t.Errorf("Failed to decode GET response body to JSON")
+	}
+
 	assert.Equal(t, respBody.Status, "healthy")
 }
 
