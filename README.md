@@ -34,8 +34,9 @@ The following binaries are required to run the tests:
 
 - [x] Replace `k8s.io/api/core/v1.*` in [k8sclient](./k8sclient/k8sclient.go) with Kubernetes manifest YAML files
 - [x] Add ability for users to pass in Docker credentials to pull images from private repos
-- [ ] Add basic health check API to detect if server is ready
+- [X] Add basic health check API to detect if server is ready
 - [ ] Some mechanism to clean up old task pods and secrets
+- [ ] Allow app configuration via environment variables
 - [ ] Improve API documentation. OpenAPI?
 - [ ] Image versioning needs work. It's currently statically defined under `IMAGE_VERSION` in the [Makefile](./Makefile)
 - [ ] Automatically pushing `k8s-task-runner` image to a remote Docker registry (Dockerhub?).
