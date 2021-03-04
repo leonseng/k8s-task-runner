@@ -50,10 +50,11 @@ test-out-of-cluster:
 test-in-cluster-setup: test-in-cluster-clean
 	@ kubectl apply -f integration_tests/k8s_task_runner.yaml
 	@ kubectl wait --for=condition=available --timeout=60s deployments/k8s-task-runner
-	@ sleep 5
+	@ kubectl apply -f integration_tests/k3d_ingress.yaml
 
 .PHONY: test-in-cluster-clean
 test-in-cluster-clean:
+	@ kubectl delete -f integration_tests/k3d_ingress.yaml || true
 	@ kubectl delete -f integration_tests/k8s_task_runner.yaml || true
 
 .PHONY: test-in-cluster
