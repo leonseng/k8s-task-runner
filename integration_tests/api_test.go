@@ -54,7 +54,7 @@ func runIntegrationTest(t *testing.T, apiEndpoint string) {
 	}
 
 	// wait for pod to run to completion
-	getRespBody := new(api.GetResponse)
+	getRespBody := new(api.GetTaskResponse)
 	var getResp *http.Response
 	for i := 0; i < 30; i++ {
 		getResp, err = http.Get(apiEndpoint + createRespBody.ID)

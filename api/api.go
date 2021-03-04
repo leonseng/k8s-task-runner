@@ -131,7 +131,7 @@ func HandleRequests(clientset *kubernetes.Clientset, namespace string, port int)
 				return
 			}
 
-			respBody := GetResponse{
+			respBody := GetTaskResponse{
 				ID:     id,
 				Status: string(pod.Status.Phase),
 			}

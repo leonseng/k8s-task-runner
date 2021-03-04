@@ -19,7 +19,7 @@ type CreateResponse struct {
 	Request CreateRequest `json:"request"`
 }
 
-type GetResponse struct {
+type GetTaskResponse struct {
 	ID     string `json:"id"`
 	Status string `json:"status"`
 	Logs   string `json:"logs"`
