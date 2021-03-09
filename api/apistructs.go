@@ -18,10 +18,11 @@ type DockerRegistry struct {
 }
 
 type CreateRequest struct {
-	Image          string          `json:"image,omitempty"`
-	Command        []string        `json:"command,omitempty"`
-	Arguments      []string        `json:"args,omitempty"`
-	DockerRegistry *DockerRegistry `json:"dockerRegistry,omitempty"`
+	Image          string            `json:"image,omitempty"`
+	Command        []string          `json:"command,omitempty"`
+	Arguments      []string          `json:"args,omitempty"`
+	DockerRegistry *DockerRegistry   `json:"dockerRegistry,omitempty"`
+	EnvVars        map[string]string `json:"envVars,omitempty"`
 }
 
 type CreateResponse struct {

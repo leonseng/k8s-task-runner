@@ -59,6 +59,7 @@ type PodParameters struct {
 	Image     string
 	Command   []string
 	Arguments []string
+	EnvVars   map[string]string
 }
 
 func CreatePodFromManifest(clientset *kubernetes.Clientset, params PodParameters) error {
