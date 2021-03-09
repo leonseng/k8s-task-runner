@@ -87,6 +87,7 @@ func createTask(appConf ApplicationConfiguration) func(w http.ResponseWriter, r 
 				Image:     reqBody.Image,
 				Command:   reqBody.Command,
 				Arguments: reqBody.Arguments,
+				EnvVars:   reqBody.EnvVars,
 			},
 		)
 

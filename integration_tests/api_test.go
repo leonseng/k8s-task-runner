@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 	"testing"
 	"time"
 
@@ -43,14 +44,20 @@ func getStatus(t *testing.T, apiEndpoint string) {
 }
 
 func createAndGetTask(t *testing.T, apiEndpoint string) {
+	test_env_var := "test_var"
+	test_env_var_value := "123"
 	reqBody := api.CreateRequest{
-		Image:   "busybox:1.28",
-		Command: []string{"date"},
+		Image:     "busybox:1.28",
+		Command:   []string{"printenv"},
+		Arguments: []string{test_env_var},
 		DockerRegistry: &api.DockerRegistry{
 			Server:   "test.com",
 			Username: "test-user",
 			Password: "secure",
 			Email:    "test-user@test.com",
+		},
+		EnvVars: map[string]string{
+			test_env_var: test_env_var_value,
 		},
 	}
 	b := new(bytes.Buffer)
@@ -97,5 +104,9 @@ func createAndGetTask(t *testing.T, apiEndpoint string) {
 
 	if getRespBody.Status != "Succeeded" {
 		t.Errorf("Test pod failed to run to completion.\nResponse Status Code: %d\nBody:\n%+v", getResp.StatusCode, *getRespBody)
+	}
+
+	if strings.TrimSpace(getRespBody.Logs) != test_env_var_value {
+		t.Errorf("Test pod failed to read environment variable correctly. Test pod log: \n%+v", getRespBody.Logs)
 	}
 }

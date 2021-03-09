@@ -28,6 +28,13 @@ spec:
       "{{.}}",
       {{- end}}
     ]
+    {{- if .EnvVars}}
+    env:
+      {{- range $key, $value := .EnvVars}}
+    - name: "{{$key}}"
+      value: "{{$value}}"
+      {{- end}}
+    {{- end}}
     imagePullPolicy: Always
   restartPolicy: Never
 `
