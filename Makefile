@@ -19,8 +19,16 @@ test-clean:
 
 .PHONY: test
 test: test-clean
+	# setup
 	@ go mod tidy
-	@ go install
-	@ k8s_task_runner -port $(TEST_PORT) -kubeconfig $(TEST_KUBECONFIG) > .log 2>&1 &
+	@ go run main.go -port $(TEST_PORT) -kubeconfig $(TEST_KUBECONFIG) > .log 2>&1 &
+
+	# wait for API to be ready
+	@ until curl http://localhost:$(TEST_PORT)/status 2> /dev/null; \
+		do \
+				sleep 1; \
+		done
+
+	# run test
 	@ K8S_TASK_RUNNER_ENDPOINT=http://localhost:$(TEST_PORT) \
 			go test ./integration_tests/
