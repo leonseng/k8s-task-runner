@@ -27,6 +27,7 @@ func runIntegrationTest(t *testing.T, apiEndpoint string) {
 }
 
 func getStatus(t *testing.T, apiEndpoint string) {
+	fmt.Println("Get status.")
 	resp, err := http.Get(apiEndpoint + "/status")
 	if err != nil {
 		t.Errorf("Failed to get app status: %v\n", err)
@@ -34,16 +35,18 @@ func getStatus(t *testing.T, apiEndpoint string) {
 
 	defer resp.Body.Close()
 	respBody := new(api.GetStatusResponse)
-	fmt.Printf("%+v\n", resp.Body)
 	err = json.NewDecoder(resp.Body).Decode(respBody)
 	if err != nil {
 		t.Errorf("Failed to decode GET response body to JSON")
 	}
 
+	fmt.Printf("Response: %+v\n", respBody)
 	assert.Equal(t, respBody.Status, "healthy")
 }
 
 func createAndGetTask(t *testing.T, apiEndpoint string) {
+	fmt.Println("Create and get task.")
+
 	test_env_var := "test_var"
 	test_env_var_value := "123"
 	reqBody := api.CreateRequest{
@@ -75,9 +78,8 @@ func createAndGetTask(t *testing.T, apiEndpoint string) {
 
 	defer createResp.Body.Close()
 	createRespBody := new(api.CreateResponse)
-	fmt.Printf("%+v\n", createResp.Body)
 	err = json.NewDecoder(createResp.Body).Decode(createRespBody)
-	fmt.Printf("%+v\n", createRespBody)
+	fmt.Printf("Response: %+v\n", createRespBody)
 	if err != nil {
 		t.Errorf("Failed to decode POST response body to struct")
 	}

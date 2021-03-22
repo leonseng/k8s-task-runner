@@ -21,8 +21,7 @@ jobs:
           make k3d-setup
       - name: Run out of cluster integration test
         run: |
-          make test-out-of-cluster-setup \
-            test-out-of-cluster
+          make test
   test-in-cluster:
     runs-on: ubuntu-latest
     steps:
@@ -40,6 +39,4 @@ jobs:
           make k3d-setup
       - name: Run in cluster integration test
         run: |
-          make image-build \
-            test-in-cluster-setup \
-            test-in-cluster
+          make in-cluster-test
