@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"strings"
 	"testing"
 	"time"
@@ -13,15 +14,13 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestInCluster(t *testing.T) {
-	runIntegrationTest(t, "http://localhost:8080/")
-}
+func TestHandleRequests(t *testing.T) {
+	apiEndpoint, ok := os.LookupEnv("K8S_TASK_RUNNER_ENDPOINT")
+	if !ok {
+		apiEndpoint = "http://localhost:80"
+	}
 
-func TestOutOfCluster(t *testing.T) {
-	runIntegrationTest(t, "http://localhost:8081/")
-}
-
-func runIntegrationTest(t *testing.T, apiEndpoint string) {
+	t.Logf("Testing against %s\n", apiEndpoint)
 	getStatus(t, apiEndpoint)
 	createAndGetTask(t, apiEndpoint)
 }
@@ -88,7 +87,7 @@ func createAndGetTask(t *testing.T, apiEndpoint string) {
 	getRespBody := new(api.GetTaskResponse)
 	var getResp *http.Response
 	for i := 0; i < 30; i++ {
-		getResp, err = http.Get(apiEndpoint + createRespBody.ID)
+		getResp, err = http.Get(apiEndpoint + "/" + createRespBody.ID)
 		if err != nil {
 			t.Errorf("Failed to get job status: %v\n", err)
 		}

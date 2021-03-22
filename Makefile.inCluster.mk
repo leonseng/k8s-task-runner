@@ -21,4 +21,5 @@ in-cluster-test: in-cluster-clean
 	@ kubectl apply -f integration_tests/k3d_ingress.yaml
 
 	# run test
-	@ go test -run TestInCluster ./integration_tests/
+	@ K8S_TASK_RUNNER_ENDPOINT=http://localhost:8080 \
+			go test ./integration_tests/
