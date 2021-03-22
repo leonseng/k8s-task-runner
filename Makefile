@@ -24,7 +24,7 @@ test: test-clean
 	@ go run main.go -port $(TEST_PORT) -kubeconfig $(TEST_KUBECONFIG) > .log 2>&1 &
 
 	# wait for API to be ready
-	@ until curl http://localhost:$(TEST_PORT)/status 2> /dev/null; \
+	@ until curl -s http://localhost:$(TEST_PORT)/status; \
 		do \
 				sleep 1; \
 		done

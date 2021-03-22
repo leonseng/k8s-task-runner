@@ -20,8 +20,7 @@ jobs:
           curl -s https://raw.githubusercontent.com/rancher/k3d/main/install.sh | bash
           make k3d-setup
       - name: Run out of cluster integration test
-        run: |
-          make test
+        run: make test
   test-in-cluster:
     runs-on: ubuntu-latest
     steps:
@@ -38,5 +37,4 @@ jobs:
           curl -s https://raw.githubusercontent.com/rancher/k3d/main/install.sh | bash
           make k3d-setup
       - name: Run in cluster integration test
-        run: |
-          make in-cluster-test
+        run: make in-cluster-test
