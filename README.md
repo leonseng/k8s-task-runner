@@ -35,8 +35,16 @@ make k3d-setup
 ```
 Once the test cluster has been set up, pick one of the following test scenarios:
 
-- To run `k8s-task-runner` as a `go` binary external to the Kubernetes cluster, run `make test`, which starts the API server on `localhost:8081` and executes the `go` tests against it
-  To run `k8s-task-runner` as a Pod within the Kubernetes cluster, run `make in-cluster-test`, which
+- To run `k8s-task-runner` as a `go` binary external to the Kubernetes cluster, run
+  ```
+  make test
+  ```
+  which starts the API server on `localhost:8081` and executes the `go` tests against it
+- To run `k8s-task-runner` as a Pod within the Kubernetes cluster, run
+  ```
+  make in-cluster-test
+  ```
+  which
   1. builds a new `k8s-task-runner` image and push it into the `k3d` Docker registry
   1. deploys the necessary Kubernetes objects to start serving `k8s-task-runner` on `localhost:8080`
   1. executes the `go` tests on `localhost:8080`
