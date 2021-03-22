@@ -29,19 +29,17 @@ Usage of k8s_task_runner:
 > HTTP_PROXY=<PROXY_URL>:<PROXY_PORT>  # e.g. HTTP_PROXY=http://10.0.2.15:3128
 > ```
 
-`k8s-task-runner` requires a Kubernetes cluster to interact with. You can spin up one by running `make k3d-setup`. Once the test cluster has been set up, pick one of the following test scenarios:
+`k8s-task-runner` requires a Kubernetes cluster to interact with. You can spin up one by running
+```
+make k3d-setup
+```
+Once the test cluster has been set up, pick one of the following test scenarios:
 
-- Out of cluster
-
-  To run `k8s-task-runner` as a `go` binary external to the Kubernetes cluster, run
-  1. `make test-out-of-cluster-setup` to start the program, which should be listening on `localhost:8081`.
-  1. `make test-out-of-cluster` to test `k8s-task-runner` on `localhost:8081`
-- In cluster
-
-  To run `k8s-task-runner` as a Pod within the Kubernetes cluster, run the following in sequence:
-  1. `make image-build` to build a new `k8s-task-runner` image and push it into the test Docker registry
-  1. `make test-in-cluster-setup` to deploy the necessary Kubernetes objects to start serving `k8s-task-runner` on `localhost:8080`
-  1. `make test-in-cluster` to test `k8s-task-runner` on `localhost:8080`
+- To run `k8s-task-runner` as a `go` binary external to the Kubernetes cluster, run `make test`, which starts the API server on `localhost:8081` and executes the `go` tests against it
+  To run `k8s-task-runner` as a Pod within the Kubernetes cluster, run `make in-cluster-test`, which
+  1. builds a new `k8s-task-runner` image and push it into the `k3d` Docker registry
+  1. deploys the necessary Kubernetes objects to start serving `k8s-task-runner` on `localhost:8080`
+  1. executes the `go` tests on `localhost:8080`
 
 ## Todo
 
