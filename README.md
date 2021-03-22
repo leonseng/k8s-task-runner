@@ -9,6 +9,19 @@ The following binaries are required to run the tests:
 - [k3d](https://k3d.io/#installation)
 - [golangci-lint](https://golangci-lint.run/usage/install/#local-installation)
 
+## Usage
+
+```
+$ k8s_task_runner --help
+Usage of k8s_task_runner:
+  -inCluster
+        Toggle for running k8s-task-runner in a Kubernetes cluster
+  -kubeconfig string
+        absolute path to the kubeconfig file (default "/etc/k8s-task-runner/.kube/config")
+  -port int
+        Port to serve API on (default 80)
+```
+
 ## Testing
 
 > If you are behind a proxy, create a file called `.user-env` at the root directory of the project with following contents:
