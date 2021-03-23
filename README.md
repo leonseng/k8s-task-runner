@@ -59,9 +59,11 @@ The OpenAPI 3.0 specification for `k8s-task-runner` can be found [here](./swagge
 - [x] Add ability for users to pass in Docker credentials to pull images from private repos
 - [X] Add basic health check API to detect if server is ready
 - [X] Add ability to specify environment variables in task pods
+- [X] Improve API documentation. OpenAPI?
+- [X] Updated API path - added task/ prefix
 - [ ] Some mechanism to clean up old task pods and secrets
 - [ ] Allow app configuration via environment variables
-- [ ] Improve API documentation. OpenAPI?
+
 - [ ] Image versioning needs work. It's currently statically defined under `IMAGE_VERSION` in the [Makefile](./Makefile)
 - [ ] Automatically pushing `k8s-task-runner` image to a remote Docker registry (Dockerhub?).
 - [ ] Create Helm chart
