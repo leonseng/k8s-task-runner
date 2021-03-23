@@ -59,7 +59,6 @@ The OpenAPI 3.0 specification for `k8s-task-runner` can be found [here](./swagge
 - [x] Add ability for users to pass in Docker credentials to pull images from private repos
 - [X] Add basic health check API to detect if server is ready
 - [X] Add ability to specify environment variables in task pods
-- [ ] Add content-type header in responses
 - [ ] Some mechanism to clean up old task pods and secrets
 - [ ] Allow app configuration via environment variables
 - [ ] Improve API documentation. OpenAPI?

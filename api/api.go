@@ -98,9 +98,7 @@ func createTask(appConf ApplicationConfiguration) func(w http.ResponseWriter, r 
 			return
 		}
 
-		w.WriteHeader(http.StatusCreated)
-		w.Header().Add("Content-Type", "application/json")
-		err = json.NewEncoder(w).Encode(
+		respData, err := json.Marshal(
 			CreateResponse{
 				ID:      id,
 				Request: reqBody,
@@ -111,6 +109,10 @@ func createTask(appConf ApplicationConfiguration) func(w http.ResponseWriter, r 
 			http.Error(w, "Internal error", http.StatusInternalServerError)
 			return
 		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+		w.Write(respData)
 	}
 }
 
@@ -124,12 +126,16 @@ func createTask(appConf ApplicationConfiguration) func(w http.ResponseWriter, r 
 		status: Returns health of application: healthy
 */
 func getStatus(w http.ResponseWriter, r *http.Request) {
-	err := json.NewEncoder(w).Encode(GetStatusResponse{Status: "healthy"})
+	respData, err := json.Marshal(GetStatusResponse{Status: "healthy"})
 	if err != nil {
 		log.Error("Failed to encode GET app status response struct to JSON")
 		http.Error(w, "Internal error", http.StatusInternalServerError)
 		return
 	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(respData)
 }
 
 /*
@@ -172,13 +178,15 @@ func getTask(appConf ApplicationConfiguration) func(w http.ResponseWriter, r *ht
 			respBody.Logs = logs
 		}
 
-		w.WriteHeader(http.StatusOK)
-		w.Header().Add("Content-Type", "application/json")
-		err = json.NewEncoder(w).Encode(respBody)
+		respData, err := json.Marshal(respBody)
 		if err != nil {
 			log.Error("Failed to encode GET task status response struct to JSON")
 			http.Error(w, "Internal error", http.StatusInternalServerError)
 			return
 		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		w.Write(respData)
 	}
 }
