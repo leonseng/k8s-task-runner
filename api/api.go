@@ -112,7 +112,12 @@ func createTask(appConf ApplicationConfiguration) func(w http.ResponseWriter, r 
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
-		w.Write(respData)
+		_, err = w.Write(respData)
+		if err != nil {
+			log.Error("Failed to write response data")
+			http.Error(w, "Internal error", http.StatusInternalServerError)
+			return
+		}
 	}
 }
 
@@ -135,7 +140,12 @@ func getStatus(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	w.Write(respData)
+	_, err = w.Write(respData)
+	if err != nil {
+		log.Error("Failed to write response data")
+		http.Error(w, "Internal error", http.StatusInternalServerError)
+		return
+	}
 }
 
 /*
@@ -187,6 +197,11 @@ func getTask(appConf ApplicationConfiguration) func(w http.ResponseWriter, r *ht
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		w.Write(respData)
+		_, err = w.Write(respData)
+		if err != nil {
+			log.Error("Failed to write response data")
+			http.Error(w, "Internal error", http.StatusInternalServerError)
+			return
+		}
 	}
 }
