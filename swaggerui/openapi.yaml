@@ -5,7 +5,7 @@ info:
 servers:
   - url: http://localhost:8081/
 paths:
-  /:
+  /task:
     post:
       summary: Create a single-run K8s pod (retartPolicy=Never) from the provided image
       requestBody:
@@ -37,7 +37,7 @@ paths:
                 example: |
                   Pod creation has failed:
                   failed to create task pod. See error logs
-  /{id}:
+  /task/{id}:
     get:
       summary: Gets status of single-run pod, and container logs if test run has been completed
       parameters:
@@ -138,21 +138,19 @@ components:
       required:
         - "image"
       example:
-        id: 4a26be0b-2160-4081-b161-dc5ea1aed520
-        request:
-          image: busybox
-          command:
-            - ls
-          args:
-            - "/etc"
-          dockerRegistry:
-            server: localregistry.com
-            username: user
-            password: pwd
-            email: user@test.com
-          envVars:
-            http_proxy: 10.0.0.1:80
-            https_proxy: 10.0.0.1:80
+        image: busybox
+        command:
+          - ls
+        args:
+          - "/etc"
+        dockerRegistry:
+          server: localregistry.com
+          username: user
+          password: pwd
+          email: user@test.com
+        envVars:
+          http_proxy: 10.0.0.1:80
+          https_proxy: 10.0.0.1:80
     TaskStatus:
       title: TaskStatus
       description: Task status.

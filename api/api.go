@@ -16,10 +16,9 @@ func HandleRequests(appConf ApplicationConfiguration) {
 	r := mux.NewRouter()
 	sh := http.StripPrefix("/swaggerui/", http.FileServer(http.Dir("./swaggerui/")))
 	r.PathPrefix("/swaggerui/").Handler(sh)
-
 	r.HandleFunc("/status", getStatus).Methods(http.MethodGet)
-	r.HandleFunc("/{id}", getTask(appConf)).Methods(http.MethodGet)
-	r.HandleFunc("/", createTask(appConf)).Methods(http.MethodPost)
+	r.HandleFunc("/task/{id}", getTask(appConf)).Methods(http.MethodGet)
+	r.HandleFunc("/task", createTask(appConf)).Methods(http.MethodPost)
 
 	err := http.ListenAndServe(":"+strconv.Itoa(appConf.Port), r)
 	if err != nil {

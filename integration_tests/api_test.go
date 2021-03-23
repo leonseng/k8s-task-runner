@@ -68,7 +68,7 @@ func createAndGetTask(t *testing.T, apiEndpoint string) {
 		t.Errorf("Failed to encode POST request body to JSON")
 	}
 
-	createResp, err := http.Post(apiEndpoint, "application/json", b)
+	createResp, err := http.Post(apiEndpoint + "/task", "application/json", b)
 	if err != nil {
 		t.Errorf("Failed to create job: %v\n", err)
 	}
@@ -87,7 +87,7 @@ func createAndGetTask(t *testing.T, apiEndpoint string) {
 	getRespBody := new(api.GetTaskResponse)
 	var getResp *http.Response
 	for i := 0; i < 30; i++ {
-		getResp, err = http.Get(apiEndpoint + "/" + createRespBody.ID)
+		getResp, err = http.Get(apiEndpoint + "/task/" + createRespBody.ID)
 		if err != nil {
 			t.Errorf("Failed to get job status: %v\n", err)
 		}
