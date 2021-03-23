@@ -3,7 +3,7 @@
 
 # allow the following files and directories
 !api/
-!k8sclient
+!k8sclient/
 !go.mod
 !go.sum
 !main.go

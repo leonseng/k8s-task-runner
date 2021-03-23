@@ -49,12 +49,17 @@ Once the test cluster has been set up, pick one of the following test scenarios:
   1. deploys the necessary Kubernetes objects to start serving `k8s-task-runner` on `localhost:8080`
   1. executes the `go` tests on `localhost:8080`
 
+## API documentation
+
+The OpenAPI 3.0 specification for `k8s-task-runner` can be found [here](./swaggerui/openapi.yaml). The Swagger UI can be accessed by `<host>/swaggerui/` endpoint of the API.
+
 ## Todo
 
 - [x] Replace `k8s.io/api/core/v1.*` in [k8sclient](./k8sclient/k8sclient.go) with Kubernetes manifest YAML files
 - [x] Add ability for users to pass in Docker credentials to pull images from private repos
 - [X] Add basic health check API to detect if server is ready
 - [X] Add ability to specify environment variables in task pods
+- [ ] Add content-type header in responses
 - [ ] Some mechanism to clean up old task pods and secrets
 - [ ] Allow app configuration via environment variables
 - [ ] Improve API documentation. OpenAPI?

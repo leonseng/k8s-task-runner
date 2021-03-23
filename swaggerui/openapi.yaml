@@ -1,0 +1,169 @@
+openapi: "3.0.2"
+info:
+  title: Kubernetes Task Runner
+  version: "1.0"
+servers:
+  - url: http://localhost:8081/
+paths:
+  /:
+    post:
+      summary: Create a single-run K8s pod (retartPolicy=Never) from the provided image
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskDescription"
+      responses:
+        "201":
+          description: Task created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: Task ID.
+                  request:
+                    $ref: "#/components/schemas/TaskDescription"
+        "400":
+          description: Task creation failed
+          content:
+            text/plain:
+              schema:
+                type: string
+                description: Failure message.
+                example: |
+                  Pod creation has failed:
+                  failed to create task pod. See error logs
+  /{id}:
+    get:
+      summary: Gets status of single-run pod, and container logs if test run has been completed
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Task ID.
+      responses:
+        "200":
+          description: Successfully retrieve pod status/logs
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskStatus"
+        "400":
+          description: Failed to get pod status/logs.
+          content:
+            text/plain:
+              schema:
+                type: string
+                description: Failure message.
+                example:
+                  podError:
+                    value: Error getting pod 4a26be0b-2160-4081-b161-dc5ea1aed520
+                    summary: Error getting pod status.
+                  podLogError:
+                    value: Failed to get pod logs.
+                    summary: Error getting pod logs.
+  /status:
+    get:
+      summary: Gets status of the k8s-task-runner application
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: Application status.
+                    example: healthy
+
+components:
+  schemas:
+    DockerRegistry:
+      title: DockerRegistry
+      description: Docker registry details
+      type: object
+      properties:
+        server:
+          description: Private Docker Registry FQDN. Use https://index.docker.io/v2/ for DockerHub.
+          type: string
+        username:
+          description: Docker username
+          type: string
+        password:
+          description: Docker password
+          type: string
+        email:
+          description: Docker email
+          type: string
+      required:
+        - "server"
+        - "username"
+        - "password"
+        - "email"
+    TaskDescription:
+      title: TaskDescription
+      description: A description of the task to be run as a Kubernetes pod
+      type: object
+      properties:
+        image:
+          description: Docker image to run for the task
+          type: string
+        command:
+          description: Overrides command field in the container (equivalent to Docker ENTRYPOINT)
+          type: array
+          items:
+            type: string
+        args:
+          description: Overrides arguments defined in the container (equivalent to Docker CMD)
+          type: array
+          items:
+            type: string
+        envVars:
+          description: Environmental variables to be passed into the task pod
+          type: object
+          additionalProperties:
+            type: string
+        dockerRegistry:
+          description: Docker registry login details to pull image from
+          type: object
+          $ref: "#/components/schemas/DockerRegistry"
+      required:
+        - "image"
+      example:
+        id: 4a26be0b-2160-4081-b161-dc5ea1aed520
+        request:
+          image: busybox
+          command:
+            - ls
+          args:
+            - "/etc"
+          dockerRegistry:
+            server: localregistry.com
+            username: user
+            password: pwd
+            email: user@test.com
+          envVars:
+            http_proxy: 10.0.0.1:80
+            https_proxy: 10.0.0.1:80
+    TaskStatus:
+      title: TaskStatus
+      description: Task status.
+      type: object
+      properties:
+        id:
+          description: Task ID.
+          type: string
+        status:
+          description: Phase of the task pod.
+          type: string
+        logs:
+          description: Terminal output from kubectl logs <pod> command
+          type: string
